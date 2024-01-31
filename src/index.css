@@ -204,3 +204,58 @@ code {
   color: #555;
   font-size: 1rem;
 }
+
+/* styles.css */
+
+.summary {
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  padding: 20px;
+  margin: 10px;
+}
+
+.summary h2 {
+  color: #333;
+  font-size: 24px;
+}
+
+.summary-info {
+  display: flex;
+  flex-direction: row;
+}
+
+.summary-info p {
+  display: flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.summary-info span {
+  margin-right: 10px;
+}
+
+/* styles.css */
+
+/* styles.css */
+
+.details .rating {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #f5f5f5;
+  border-radius: 5px;
+  padding: 10px;
+  margin: 10px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.details .rating p {
+  font-size: 18px;
+  color: #333;
+  margin-top: 10px;
+}
+
+.details .rating span {
+  color: #ff0;
+  font-size: 24px;
+}

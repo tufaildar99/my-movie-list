@@ -1,6 +1,5 @@
 import { React, useEffect } from "react";
 import StarRating from "./StarRating";
-import img from "./img.jpg";
 
 export default function App() {
   return (
@@ -14,6 +13,7 @@ export default function App() {
           <MovieList />
         </Box>
         <Box>
+          <WatchedSummary />
           <MovieDetails />
         </Box>
       </Main>
@@ -108,10 +108,7 @@ function MovieDetails() {
 
       <section>
         <div className="rating">
-          <>
-            <StarRating />
-          </>
-
+          <StarRating />
           <p>
             You rated movie with 10 <span>⭐️</span>
           </p>
@@ -125,6 +122,31 @@ function MovieDetails() {
         <p>Starring Bret Hart, Jeff Jarrett, Brian James, David Heath</p>
         <p>Directed by Shane Van Dyke</p>
       </section>
+    </div>
+  );
+}
+function WatchedSummary() {
+  return (
+    <div className="summary">
+      <h2>Movies you watched</h2>
+      <div className="summary-info">
+        <p>
+          <span>#️⃣</span>
+          <span>5 movies</span>
+        </p>
+        <p>
+          <span>⭐️</span>
+          <span>0.0</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>5.6</span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span>420 min</span>
+        </p>
+      </div>
     </div>
   );
 }
