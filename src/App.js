@@ -6,7 +6,6 @@ const KEY = "fc2452a1";
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [loading, setIsLoading] = useState(false);
-  const [showmovies, setShowMovies] = useState(false);
   const [query, setQuery] = useState("");
 
   useEffect(() => {
@@ -30,7 +29,7 @@ export default function App() {
       <NavBar>
         <Logo />
         <Search query={query} setQuery={setQuery} />
-        <NumResults />
+        {query.length === 0 ? "" : <NumResults movies={movies} />}
       </NavBar>
       <Main>
         <Box>
@@ -78,10 +77,10 @@ function Search({ query, setQuery }) {
   );
 }
 
-function NumResults() {
+function NumResults({ movies = [] }) {
   return (
     <div className="numresults">
-      <p>Found 3 results</p>
+      <p>Found {movies.length} results</p>
     </div>
   );
 }
