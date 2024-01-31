@@ -1,16 +1,17 @@
 import { React, useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
-const KEY = "f84fc31d";
+const KEY = "fc2452a1";
 
 export default function App() {
   const [movies, setMovies] = useState([]);
   const [loading, setIsLoading] = useState(false);
   const [showmovies, setShowMovies] = useState(false);
-  const query = "interstellar";
+  const [query, setQuery] = useState("");
 
   useEffect(() => {
     async function fetchMovies() {
+      setIsLoading(true);
       const res = await fetch(
         `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
       );
@@ -22,20 +23,27 @@ export default function App() {
     }
 
     fetchMovies();
-  }, []);
+  }, [query]);
 
   return (
     <div className="app">
       <NavBar>
         <Logo />
-        <Search />
+        <Search query={query} setQuery={setQuery} />
         <NumResults />
       </NavBar>
       <Main>
-        <Box>{loading ? <Loader /> : <MovieList movies={movies} />}</Box>
+        <Box>
+          {loading ? (
+            <Loader />
+          ) : query.length === 0 ? (
+            <WelcomeComponent />
+          ) : (
+            <MovieList movies={movies} />
+          )}
+        </Box>
         <Box>
           <WatchedSummary />
-          {showmovies && <MovieDetails />}
         </Box>
       </Main>
     </div>
@@ -57,10 +65,15 @@ function Logo() {
   );
 }
 
-function Search() {
+function Search({ query, setQuery }) {
   return (
     <div className="search">
-      <input type="text" placeholder="Search Movies" />
+      <input
+        type="text"
+        placeholder="Search Movies"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
+      />
     </div>
   );
 }
@@ -100,8 +113,8 @@ function Box({ children }) {
 function MovieList({ movies }) {
   return (
     <ul className="movielist">
-      {movies.map((movie) => (
-        <Movie movie={movie} />
+      {movies?.map((movie) => (
+        <Movie key={movie.imdbID} movie={movie} />
       ))}
     </ul>
   );
