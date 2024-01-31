@@ -1,20 +1,41 @@
-import { React, useEffect } from "react";
+import { React, useEffect, useState } from "react";
 import StarRating from "./StarRating";
 
+const KEY = "f84fc31d";
+
 export default function App() {
+  const [movies, setMovies] = useState([]);
+  const [loading, setIsLoading] = useState(false);
+  const [showmovies, setShowMovies] = useState(false);
+  const query = "interstellar";
+
+  useEffect(() => {
+    async function fetchMovies() {
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${KEY}&s=${query}`
+      );
+      const data = await res.json();
+      console.log(data);
+      setMovies(data.Search);
+      setIsLoading(false);
+      console.log(data.Search);
+    }
+
+    fetchMovies();
+  }, []);
+
   return (
     <div className="app">
       <NavBar>
+        <Logo />
         <Search />
         <NumResults />
       </NavBar>
       <Main>
-        <Box>
-          <MovieList />
-        </Box>
+        <Box>{loading ? <Loader /> : <MovieList movies={movies} />}</Box>
         <Box>
           <WatchedSummary />
-          <MovieDetails />
+          {showmovies && <MovieDetails />}
         </Box>
       </Main>
     </div>
@@ -22,12 +43,7 @@ export default function App() {
 }
 
 function NavBar({ children }) {
-  return (
-    <div className="navbar">
-      <Logo />
-      {children}
-    </div>
-  );
+  return <div className="navbar">{children}</div>;
 }
 
 function Logo() {
@@ -57,6 +73,22 @@ function NumResults() {
   );
 }
 
+function WelcomeComponent() {
+  return (
+    <div className="welcome">
+      <h2>Welcome!</h2>
+      <p>
+        Nothing to display . Search for your favorite movies in the search bar
+        above.
+      </p>
+    </div>
+  );
+}
+
+function Loader() {
+  return <p className="loader">Loading...</p>;
+}
+
 function Main({ children }) {
   return <div className="main">{children}</div>;
 }
@@ -65,25 +97,25 @@ function Box({ children }) {
   return <div className="box">{children}</div>;
 }
 
-function MovieList() {
+function MovieList({ movies }) {
   return (
     <ul className="movielist">
-      <Movie />
-      <Movie />
-      <Movie />
+      {movies.map((movie) => (
+        <Movie movie={movie} />
+      ))}
     </ul>
   );
 }
 
-function Movie() {
+function Movie({ movie }) {
   return (
     <li className="movie">
-      <img alt="" />
-      <h3>Inception</h3>
-      <div>
+      <img src={movie.Poster} alt="" className="poster" />
+      <h3>{movie.Title}</h3>
+      <div className="movie-info">
         <p>
           <span>🗓</span>
-          <span>2010</span>
+          <span>{movie.Year}</span>
         </p>
       </div>
     </li>
