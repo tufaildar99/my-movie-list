@@ -7,6 +7,11 @@ export default function App() {
   const [movies, setMovies] = useState([]);
   const [loading, setIsLoading] = useState(false);
   const [query, setQuery] = useState("");
+  const [selectedId, setSelectedId] = useState(null);
+
+  function handleSelectedMovie(id) {
+    setSelectedId(id);
+  }
 
   useEffect(() => {
     async function fetchMovies() {
@@ -38,11 +43,20 @@ export default function App() {
           ) : query.length === 0 ? (
             <WelcomeComponent />
           ) : (
-            <MovieList movies={movies} />
+            <MovieList
+              movies={movies}
+              handleSelectedMovie={handleSelectedMovie}
+            />
           )}
         </Box>
         <Box>
-          <WatchedSummary />
+          {selectedId ? (
+            <MovieDetails selectedId={selectedId} />
+          ) : (
+            <>
+              <WatchedSummary />
+            </>
+          )}
         </Box>
       </Main>
     </div>
@@ -109,19 +123,28 @@ function Box({ children }) {
   return <div className="box">{children}</div>;
 }
 
-function MovieList({ movies }) {
+function MovieList({ movies, handleSelectedMovie }) {
   return (
     <ul className="movielist">
       {movies?.map((movie) => (
-        <Movie key={movie.imdbID} movie={movie} />
+        <Movie
+          key={movie.imdbID}
+          movie={movie}
+          handleSelectedMovie={handleSelectedMovie}
+        />
       ))}
     </ul>
   );
 }
 
-function Movie({ movie }) {
+function Movie({ movie, handleSelectedMovie }) {
   return (
-    <li className="movie">
+    <li
+      className="movie"
+      onClick={() => {
+        handleSelectedMovie(movie.imdbID);
+      }}
+    >
       <img src={movie.Poster} alt="" className="poster" />
       <h3>{movie.Title}</h3>
       <div className="movie-info">
@@ -134,41 +157,75 @@ function Movie({ movie }) {
   );
 }
 
-function MovieDetails() {
-  return (
-    <div className="details">
-      <header>
-        <img />
-        <div className="details-overview">
-          <h2>Inception</h2>
-          <p>2010 &bull; 128 min</p>
-          <p>Romance</p>
-          <p>
-            <span>⭐️</span>
-            8.8 IMDb rating
-          </p>
-        </div>
-      </header>
+function MovieDetails({ selectedId }) {
+  const [movie, setMovie] = useState({});
+  const [isLoading, setIsLoading] = useState(false);
 
-      <section>
-        <div className="rating">
-          <StarRating />
-          <p>
-            You rated movie with 10 <span>⭐️</span>
-          </p>
-        </div>
-        <p>
-          <em>
-            A seventeen-year-old aristocrat falls in love with a kind but poor
-            artist aboard the luxurious, ill-fated R.M.S. Titanic.
-          </em>
-        </p>
-        <p>Starring Bret Hart, Jeff Jarrett, Brian James, David Heath</p>
-        <p>Directed by Shane Van Dyke</p>
-      </section>
+  const {
+    Title: title,
+    Year: year,
+    Poster: poster,
+    Runtime: runtime,
+    imdbRating,
+    Plot: plot,
+    Released: released,
+    Actors: actors,
+    Director: director,
+    Genre: genre,
+  } = movie;
+
+  useEffect(() => {
+    async function getMovieDetails() {
+      setIsLoading(true);
+      const res = await fetch(
+        `http://www.omdbapi.com/?apikey=${KEY}&i=${selectedId}`
+      );
+      const data = await res.json();
+      setIsLoading(false);
+      setMovie(data);
+    }
+    getMovieDetails();
+  }, [selectedId]);
+
+  return (
+    <div className={`details ${selectedId ? "active" : ""}`}>
+      {isLoading ? (
+        <Loader />
+      ) : (
+        <>
+          <header>
+            <img src={poster} alt={`Poster of ${title} movie`} />
+            <div className="details-overview">
+              <h2>{title}</h2>
+              <p>
+                {released} &bull; {runtime}
+              </p>
+              <p>{genre}</p>
+              <p>
+                <span>⭐️</span>
+                {imdbRating} IMDb rating
+              </p>
+            </div>
+          </header>
+          <section>
+            <div className="rating">
+              {<StarRating maxRating={10} size={24} />}
+              <p>
+                You rated with movie 8 <span>⭐️</span>
+              </p>
+            </div>
+            <p>
+              <em>{plot}</em>
+            </p>
+            <p>Starring {actors}</p>
+            <p>Directed by {director}</p>
+          </section>
+        </>
+      )}
     </div>
   );
 }
+
 function WatchedSummary() {
   return (
     <div className="summary">
