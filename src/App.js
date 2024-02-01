@@ -13,6 +13,10 @@ export default function App() {
     setSelectedId(id);
   }
 
+  function onCloseMovie() {
+    setSelectedId(null);
+  }
+
   useEffect(() => {
     async function fetchMovies() {
       setIsLoading(true);
@@ -51,7 +55,7 @@ export default function App() {
         </Box>
         <Box>
           {selectedId ? (
-            <MovieDetails selectedId={selectedId} />
+            <MovieDetails selectedId={selectedId} onCloseMovie={onCloseMovie} />
           ) : (
             <>
               <WatchedSummary />
@@ -60,6 +64,59 @@ export default function App() {
         </Box>
       </Main>
     </div>
+  );
+}
+
+function WatchedSummary() {
+  return (
+    <div className="summary">
+      <h2>Movies you watched</h2>
+      <div className="summary-info">
+        <p>
+          <span>#️⃣</span>
+          <span>5 movies</span>
+        </p>
+        <p>
+          <span>⭐️</span>
+          <span>0.0</span>
+        </p>
+        <p>
+          <span>🌟</span>
+          <span>5.6</span>
+        </p>
+        <p>
+          <span>⏳</span>
+          <span>420 min</span>
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function WatchedList({ watchList }) {
+  return (
+    <ul className="watched-list">
+      {watchList.map((item) => (
+        <WatchedMovie movie={item} />
+      ))}
+    </ul>
+  );
+}
+
+function WatchedMovie({ movie }) {
+  return (
+    <li className="watched-movie">
+      <div className="movie-poster">
+        <div className="watched-movie-info">
+          <h5>{movie.Title}</h5>
+          <div className="paras">
+            <p>{movie.imdbRating} ⭐</p>
+            <p>⌛ {movie.Runtime}</p>
+            <button>❌</button>
+          </div>
+        </div>
+      </div>
+    </li>
   );
 }
 
@@ -157,7 +214,7 @@ function Movie({ movie, handleSelectedMovie }) {
   );
 }
 
-function MovieDetails({ selectedId }) {
+function MovieDetails({ selectedId, onCloseMovie, addToWatchlist }) {
   const [movie, setMovie] = useState({});
   const [isLoading, setIsLoading] = useState(false);
 
@@ -194,6 +251,9 @@ function MovieDetails({ selectedId }) {
       ) : (
         <>
           <header>
+            <button className="btn-back" onClick={() => onCloseMovie()}>
+              &larr;
+            </button>
             <img src={poster} alt={`Poster of ${title} movie`} />
             <div className="details-overview">
               <h2>{title}</h2>
@@ -205,15 +265,14 @@ function MovieDetails({ selectedId }) {
                 <span>⭐️</span>
                 {imdbRating} IMDb rating
               </p>
+              <div className="watchlist-btn">
+                <div className="add-to-list">
+                  <button onClick={addToWatchlist}>Add to watchlist</button>
+                </div>
+              </div>
             </div>
           </header>
           <section>
-            <div className="rating">
-              {<StarRating maxRating={10} size={24} />}
-              <p>
-                You rated with movie 8 <span>⭐️</span>
-              </p>
-            </div>
             <p>
               <em>{plot}</em>
             </p>
@@ -222,32 +281,6 @@ function MovieDetails({ selectedId }) {
           </section>
         </>
       )}
-    </div>
-  );
-}
-
-function WatchedSummary() {
-  return (
-    <div className="summary">
-      <h2>Movies you watched</h2>
-      <div className="summary-info">
-        <p>
-          <span>#️⃣</span>
-          <span>5 movies</span>
-        </p>
-        <p>
-          <span>⭐️</span>
-          <span>0.0</span>
-        </p>
-        <p>
-          <span>🌟</span>
-          <span>5.6</span>
-        </p>
-        <p>
-          <span>⏳</span>
-          <span>420 min</span>
-        </p>
-      </div>
     </div>
   );
 }
